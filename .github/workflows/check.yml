@@ -1,0 +1,19 @@
+name: check
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  links-and-indexes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Every link and input path resolves
+        run: python -I _tools/links.py
+      - name: Generated indexes are up to date
+        run: |
+          python -I _tools/index.py boat-videos/boats
+          git diff --exit-code -- '*_index.md' || (echo "Run: python -I _tools/index.py boat-videos/boats and commit" && exit 1)
